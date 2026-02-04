@@ -43,3 +43,14 @@ MIN_YEAR = 1950
 MAX_YEAR = 2026
 MIN_VOTE_AVERAGE = 6.0
 MIN_VOTE_COUNT = 10
+
+from pandas import DataFrame
+import numpy as np
+
+
+def gems_score(df: DataFrame) -> DataFrame:
+    scores = (df["vote_average"] * np.log10(df["vote_count"] + 1)) / (
+        df["popularity"] + 1
+    )
+    scores.fillna(0, inplace=True)
+    return scores
