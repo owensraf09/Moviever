@@ -757,7 +757,131 @@ def get_data() -> pd.DataFrame | None:
 
 
 
-
-
-
+#Display films of the previous month.
 st.title("Moviever Film database")
+
+import pandas as pd
+from datetime import datetime, timedelta
+from app import get_data
+
+def get_top_rated_previous_month(df: pd.DataFrame, top_n: int = 20) -> pd.DataFrame:
+    """
+    Get top rated films released in the previous month.
+    Returns DataFrame sorted by vote_average descending.
+    """
+    current_date = datetime.now()
+    
+    # Calculate previous month
+    first_day_current_month = current_date.replace(day=1)
+    last_day_previous_month = first_day_current_month - timedelta(days=1)
+    previous_month = last_day_previous_month.month
+    previous_year = last_day_previous_month.year
+    
+    # Filter for previous month and year
+    df_previous_month = df[
+        (df["release_date"].dt.month == previous_month) & 
+        (df["release_date"].dt.year == previous_year) &
+        (df["release_date"].notna())
+    ].copy()
+    
+    # Sort by vote_average descending, then by vote_count descending as tiebreaker
+    df_previous_month = df_previous_month.sort_values(
+        ["vote_average", "vote_count"], 
+        ascending=[False, False]
+    )
+    
+    return df_previous_month.head(top_n)
+
+def render_top_rated_previous_month_table(df: pd.DataFrame) -> None:
+    """
+    Render a table showing the top rated films of the previous month.
+    """
+    current_date = datetime.now()
+    
+    # Calculate previous month name and year
+    first_day_current_month = current_date.replace(day=1)
+    last_day_previous_month = first_day_current_month - timedelta(days=1)
+    previous_month_name = last_day_previous_month.strftime("%B")
+    previous_year = last_day_previous_month.year
+    
+    st.subheader(f"🏆 Top Rated Films of {previous_month_name} {previous_year}")
+    
+    # Get top rated films of previous month
+    df_top_month = get_top_rated_previous_month(df, top_n=50)
+    
+    if len(df_top_month) == 0:
+        st.info(f"No movies found for {previous_month_name} {previous_year}.")
+        st.write("This might be because:")
+        st.write("- No movies were released in that month")
+        st.write("- The data doesn't include movies from that period")
+        st.write("- Try refreshing the data to get more complete information")
+        return
+    
+    # Prepare display data
+    df_display = df_top_month.copy()
+    df_display["release_date_str"] = df_display["release_date"].dt.strftime("%Y-%m-%d")
+    
+    # Select columns for display
+    display_cols = [
+        "original_title",
+        "release_date_str", 
+        "vote_average",
+        "vote_count",
+        "popularity",
+        "genres_str"
+    ]
+    
+    df_table = df_display[display_cols].copy()
+    df_table.columns = ["Title", "Release Date", "Rating", "Vote Count", "Popularity", "Genres"]
+    
+    # Format numeric columns
+    df_table["Rating"] = df_table["Rating"].round(2)
+    df_table["Popularity"] = df_table["Popularity"].round(2)
+    
+    # Show count and slider for limiting results
+    total_movies = len(df_table)
+    st.caption(f"Found {total_movies} movies released in {previous_month_name} {previous_year}")
+    
+    if total_movies > 10:
+        show_n = st.slider(
+            "Number of movies to display",
+            min_value=5,
+            max_value=min(50, total_movies),
+            value=min(20, total_movies),
+            step=5,
+            key="previous_month_slider"
+        )
+        df_table = df_table.head(show_n)
+    
+    # Display the table
+    st.dataframe(df_table, use_container_width=True, height=400)
+    
+    # Add download button
+    csv_data = df_table.to_csv(index=False).encode("utf-8")
+    st.download_button(
+        label=f"Download Top Rated {previous_month_name} {previous_year} Movies as CSV",
+        data=csv_data,
+        file_name=f"top_rated_{previous_month_name.lower()}_{previous_year}.csv",
+        mime="text/csv",
+        key="download_previous_month"
+    )
+    
+    # Show some stats
+    if len(df_top_month) > 0:
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            avg_rating = df_top_month["vote_average"].mean()
+            st.metric("Average Rating", f"{avg_rating:.2f}")
+        with col2:
+            total_votes = df_top_month["vote_count"].sum()
+            st.metric("Total Votes", f"{total_votes:,}")
+        with col3:
+            highest_rated = df_top_month["vote_average"].max()
+            st.metric("Highest Rating", f"{highest_rated:.2f}")
+
+# Usage example - add this to your Streamlit page
+if __name__ == "__main__":
+    # Load data
+    df = get_data()
+    if df is not None:
+        render_top_rated_previous_month_table(df)
