@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -885,64 +885,57 @@ def get_data() -> pd.DataFrame | None:
         return None
 
 
-
-
-
-
-#get our top 10 films of the previous month
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-from home import get_data
-
+# get our top 10 films of the previous month
 def get_top_gems_previous_month(df: pd.DataFrame, top_n: int = 10) -> pd.DataFrame:
     """
     Get top gems (by gems_score) released in the previous month.
     Returns DataFrame sorted by gems_score descending.
     """
     current_date = datetime.now()
-    
+
     # Calculate previous month
     first_day_current_month = current_date.replace(day=1)
     last_day_previous_month = first_day_current_month - timedelta(days=1)
     previous_month = last_day_previous_month.month
     previous_year = last_day_previous_month.year
-    
+
     # Filter for previous month and year
     df_previous_month = df[
-        (df["release_date"].dt.month == previous_month) & 
-        (df["release_date"].dt.year == previous_year) &
-        (df["release_date"].notna())
+        (df["release_date"].dt.month == previous_month)
+        & (df["release_date"].dt.year == previous_year)
+        & (df["release_date"].notna())
     ].copy()
-    
+
     # Ensure gems_score exists
     if "gems_score" not in df_previous_month.columns:
         df_previous_month["gems_score"] = (
-            df_previous_month["vote_average"] * np.log10(df_previous_month["vote_count"] + 1)
+            df_previous_month["vote_average"]
+            * np.log10(df_previous_month["vote_count"] + 1)
         ) / (df_previous_month["popularity"] + 1)
         df_previous_month["gems_score"] = df_previous_month["gems_score"].fillna(0)
-    
+
     # Sort by gems_score descending
     df_previous_month = df_previous_month.sort_values("gems_score", ascending=False)
-    
+
     return df_previous_month.head(top_n)
+
 
 def render_top_gems_previous_month_table(df: pd.DataFrame) -> None:
     """
     Render a table showing the top 10 hidden gems of the previous month by gems_score.
     """
     current_date = datetime.now()
-    
+
     # Calculate previous month name and year
     first_day_current_month = current_date.replace(day=1)
     last_day_previous_month = first_day_current_month - timedelta(days=1)
     previous_month_name = last_day_previous_month.strftime("%B")
     previous_year = last_day_previous_month.year
-    
+
     st.subheader(f" Our Top 10 Film of {previous_month_name} {previous_year}")
     # Get top gems of previous month
     df_top_gems = get_top_gems_previous_month(df, top_n=10)
-    
+
     if len(df_top_gems) == 0:
         st.info(f"No movies found for {previous_month_name} {previous_year}.")
         st.write("This might be because:")
@@ -950,41 +943,47 @@ def render_top_gems_previous_month_table(df: pd.DataFrame) -> None:
         st.write("- The data doesn't include movies from that period")
         st.write("- Try refreshing the data to get more complete information")
         return
-    
+
     # Prepare display data
     df_display = df_top_gems.copy()
     df_display["release_date_str"] = df_display["release_date"].dt.strftime("%Y-%m-%d")
-    
+
     # Select columns for display
     display_cols = [
         "original_title",
-        "release_date_str", 
+        "release_date_str",
         "vote_average",
         "vote_count",
         "popularity",
         "gems_score",
-        "genres_str"
+        "genres_str",
     ]
-    
+
     df_table = df_display[display_cols].copy()
-    df_table.columns = ["Title", "Release Date", "Rating", "Vote Count", "Popularity", "Gems Score", "Genres"]
-    
+    df_table.columns = [
+        "Title",
+        "Release Date",
+        "Rating",
+        "Vote Count",
+        "Popularity",
+        "Gems Score",
+        "Genres",
+    ]
+
     # Format numeric columns
     df_table["Rating"] = df_table["Rating"].round(2)
     df_table["Popularity"] = df_table["Popularity"].round(2)
     df_table["Gems Score"] = df_table["Gems Score"].round(4)
-    
+
     # Add rank column
     df_table.insert(0, "Rank", range(1, len(df_table) + 1))
-    
+
     # Show count
     total_movies = len(df_table)
-    
+
     # Display the table
     st.dataframe(df_table, use_container_width=True, height=400)
-    
-   
-    
+
     # Show some stats
     if len(df_top_gems) > 0:
         col1, col2, col3, col4 = st.columns(4)
@@ -1005,11 +1004,12 @@ def render_top_gems_previous_month_table(df: pd.DataFrame) -> None:
 st.title("Moviever Film Dashboard")
 
 
-st.markdown("""
+st.markdown(
+    """
 Welcome to the **Moviever Explorer**, your gateway to discovering hidden gems and analyzing movie trends! 
 This app analyses our movie database to bring you comprehensive movie data with powerful filtering and analysis tools.
-""")
-
+"""
+)
 
 
 # Usage example - add this to your Streamlit page
@@ -1023,13 +1023,20 @@ if __name__ == "__main__":
 st.subheader("📋 Index:")
 
 st.markdown("#### 🏠 Film Finder- Hidden Gems Finder")
-st.markdown("Find high-quality, underrated movies using the Gems Score algorithm. Shows top movies with detailed info and download options.")
+st.markdown(
+    "Find high-quality, underrated movies using the Gems Score algorithm. Shows top movies with detailed info and download options."
+)
 
 st.markdown("#### 📊 Analytics - Data Dashboard")
-st.markdown("Visual charts and statistics about the movie dataset. Includes rating distributions, popularity trends, and year/language breakdowns.")
+st.markdown(
+    "Visual charts and statistics about the movie dataset. Includes rating distributions, popularity trends, and year/language breakdowns."
+)
 
 st.markdown("#### 🔍 Browse All - Movie Browser")
-st.markdown("Search, sort, and browse all movies with table or card views. Includes pagination and flexible sorting options.")
+st.markdown(
+    "Search, sort, and browse all movies with table or card views. Includes pagination and flexible sorting options."
+)
 
-st.caption("💡 All pages share the same sidebar filters for consistent data exploration.")
-
+st.caption(
+    "💡 All pages share the same sidebar filters for consistent data exploration."
+)
