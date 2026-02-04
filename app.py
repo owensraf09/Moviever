@@ -1007,3 +1007,12 @@ if __name__ == "__main__":
     df = get_data()
     if df is not None:
         render_top_gems_previous_month_table(df)
+
+st.subheader("**Index**")
+st.markdown("**Home - Hidden Gems Finder**")
+st.markdown("Find high-quality, underrated movies using the Gems Score algorithm. Shows top movies with detailed info and download options.")
+
+st.markdown(" **Analytics - Data Dashboard**")
+st.markdown("Visual charts and statistics about the movie dataset. Includes rating distributions, popularity trends, and year/language breakdowns.")
+st.markdown("**Browse All - Movie Browser**")
+st.markdown("Search, sort, and browse all movies with table or card views. Includes pagination and flexible sorting options.")
