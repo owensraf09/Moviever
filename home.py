@@ -1,5 +1,9 @@
 import streamlit as st
 from dotenv import load_dotenv
+from utils.fonts import apply_moviever_fonts
+
+# Apply Moviever fonts
+apply_moviever_fonts()
 
 # This was added by Alex
 # 123

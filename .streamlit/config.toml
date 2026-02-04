@@ -11,5 +11,6 @@ secondaryBackgroundColor = "#2A627D"  # Slightly raised panels / sidebar
 textColor = "#E8F2EE"               # Soft mint-white for readability
 
 # --- Font fallback (Streamlit limitation) ---
+# Note: Custom fonts (Cambria for text, Latha for headers) are applied via CSS in utils/fonts.py
 font = "serif"
 

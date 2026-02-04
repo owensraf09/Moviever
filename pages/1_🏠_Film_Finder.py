@@ -6,6 +6,10 @@ from utils.data_loader import get_data
 from utils.filters import render_sidebar_filters
 from utils.data_processing import filter_df
 from utils.rendering import render_metrics, render_table_and_details
+from utils.fonts import apply_moviever_fonts
+
+# Apply Moviever fonts
+apply_moviever_fonts()
 
 
 # Load data FIRST - before any UI elements
