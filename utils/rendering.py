@@ -192,19 +192,8 @@ def render_cards(df: pd.DataFrame, cards_per_row: int = 3):
                     st.image(poster_url, use_container_width=True)
 
                 # Title and key info
-                st.markdown(f"### {movie['original_title']}")
-                st.caption(
-                    f"📅 {movie['release_date_str']} | 🌍 {movie['original_language']}"
-                )
-
-                col_metrics = st.columns(3)
-                with col_metrics[0]:
-                    st.metric("⭐", f"{movie['vote_average']:.1f}")
-                with col_metrics[1]:
-                    st.metric("👥", f"{int(movie['vote_count']):,}")
-                with col_metrics[2]:
-                    st.metric("🔥", f"{movie['popularity']:.1f}")
-
+                st.markdown(f"{movie['original_title']}")
+                
                 st.caption(f"💎 Gems Score: {movie['gems_score']:.3f}")
 
                 if pd.notna(movie.get("overview")) and movie["overview"]:
@@ -216,6 +205,13 @@ def render_cards(df: pd.DataFrame, cards_per_row: int = 3):
                         )
 
                 st.divider()
+        
+        # Add vertical gap after each complete row
+        if (idx + 1) % cards_per_row == 0 and idx < len(df) - 1:
+            st.write("")
+            st.write("")
+            st.write("")
+            st.write("")
 
 
 def render_stats(df: pd.DataFrame):
