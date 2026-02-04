@@ -2,7 +2,10 @@ import streamlit as st
 
 st.set_page_config(page_title="Hidden Gems", layout="wide", page_icon="🏠")
 
-from home import get_data, render_sidebar_filters, filter_df, render_metrics, render_table_and_details
+from utils.data_loader import get_data
+from utils.filters import render_sidebar_filters
+from utils.data_processing import filter_df
+from utils.rendering import render_metrics, render_table_and_details
 
 
 # Load data FIRST - before any UI elements

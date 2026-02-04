@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 st.set_page_config(page_title="Analytics", layout="wide", page_icon="📊")
 
-from home import get_data, render_sidebar_filters, filter_df, render_metrics
+from utils.data_loader import get_data
+from utils.filters import render_sidebar_filters
+from utils.data_processing import filter_df
+from utils.rendering import render_metrics
 
 
 # Load data FIRST - before any UI elements
