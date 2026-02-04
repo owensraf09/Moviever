@@ -1,0 +1,15 @@
+[theme]
+base = "dark"
+
+# --- Accent / interactive elements ---
+primaryColor = "#501537"            # crimson violet
+
+# --- App surfaces ---
+secondaryBackgroundColor = "#2A627D"  # Slightly raised panels / sidebar
+
+# --- Text ---
+textColor = "#E8F2EE"               # Soft mint-white for readability
+
+# --- Font fallback (Streamlit limitation) ---
+font = "serif"
+
