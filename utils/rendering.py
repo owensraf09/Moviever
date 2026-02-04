@@ -216,3 +216,21 @@ def render_cards(df: pd.DataFrame, cards_per_row: int = 3):
                         )
 
                 st.divider()
+
+
+def render_stats(df: pd.DataFrame):
+    # Show some stats
+    if len(df) > 0:
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            avg_rating = df["vote_average"].mean()
+            st.metric("Average Rating", f"{avg_rating:.2f}")
+        with col2:
+            avg_gems_score = df["gems_score"].mean()
+            st.metric("Average Gems Score", f"{avg_gems_score:.4f}")
+        with col3:
+            total_votes = df["vote_count"].sum()
+            st.metric("Total Votes", f"{total_votes:,}")
+        with col4:
+            avg_popularity = df["popularity"].mean()
+            st.metric("Average Popularity", f"{avg_popularity:.2f}")

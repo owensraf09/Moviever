@@ -6,7 +6,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from utils.rendering import render_cards
+from utils.rendering import render_cards, render_stats
 
 
 def get_top_gems_previous_month(df: pd.DataFrame, top_n: int = 10) -> pd.DataFrame:
@@ -107,21 +107,7 @@ def render_top_gems_previous_month_table(df: pd.DataFrame) -> None:
     # Display the table
     st.dataframe(df_table, use_container_width=True, height=400)
 
-    # Show some stats
-    if len(df_top_gems) > 0:
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            avg_rating = df_top_gems["vote_average"].mean()
-            st.metric("Average Rating", f"{avg_rating:.2f}")
-        with col2:
-            avg_gems_score = df_top_gems["gems_score"].mean()
-            st.metric("Average Gems Score", f"{avg_gems_score:.4f}")
-        with col3:
-            total_votes = df_top_gems["vote_count"].sum()
-            st.metric("Total Votes", f"{total_votes:,}")
-        with col4:
-            avg_popularity = df_top_gems["popularity"].mean()
-            st.metric("Average Popularity", f"{avg_popularity:.2f}")
+    render_stats(df_top_gems)
 
 
 def render_top_gems_previous_month_cards(df: pd.DataFrame) -> None:
@@ -154,18 +140,4 @@ def render_top_gems_previous_month_cards(df: pd.DataFrame) -> None:
 
     render_cards(df_display, 5)
 
-    # Show some stats
-    if len(df_top_gems) > 0:
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            avg_rating = df_top_gems["vote_average"].mean()
-            st.metric("Average Rating", f"{avg_rating:.2f}")
-        with col2:
-            avg_gems_score = df_top_gems["gems_score"].mean()
-            st.metric("Average Gems Score", f"{avg_gems_score:.4f}")
-        with col3:
-            total_votes = df_top_gems["vote_count"].sum()
-            st.metric("Total Votes", f"{total_votes:,}")
-        with col4:
-            avg_popularity = df_top_gems["popularity"].mean()
-            st.metric("Average Popularity", f"{avg_popularity:.2f}")
+    render_stats(df_top_gems)
