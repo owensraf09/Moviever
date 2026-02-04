@@ -20,7 +20,7 @@ DEFAULT_FETCH_PAGES = 500
 # Caching Configuration
 # -----------------------------
 
-TMDB_CACHE_TTL = 86400   # 24 hour
+TMDB_CACHE_TTL = 86400  # 24 hours
 GENRE_CACHE_TTL = 86400  # 24 hours
 
 # -----------------------------
